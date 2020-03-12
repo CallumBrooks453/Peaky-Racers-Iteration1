@@ -10,7 +10,7 @@ class BaseScene extends Phaser.Scene {
         //UI Load
         this.load.image("fuelBar", 'assets/png/fuel-bar-inner.png');
         this.load.image('fuelOutline', 'assets/png/fuel-bar-outer.png', )
-        
+
     }
     create() {
         //Load Road
@@ -18,16 +18,23 @@ class BaseScene extends Phaser.Scene {
         this.road2 = this.physics.add.sprite(160, 200, "road");
         //Load Player
         this.player = this.physics.add.sprite(162, 350, "player");
-        this.player.setCollideWorldBounds(true)  
+        this.player.setCollideWorldBounds(true)
         //Load Fuel
-        this.add.text(5,3,'Fuel:', {
-            font: '15px Arial'   
+        this.add.text(5, 3, 'Fuel:', {
+            font: '15px Arial'
         });
-        this.fuelBar = this.physics.add.image(48, 24, 'fuelBar')
-        this.fuelBar.setScale(0.22)
-        this.fuelBarOutline = this.physics.add.image(48, 24, 'fuelOutline')
-        this.fuelBarOutline.setScale(0.22)
+        this.fuelBar = {};
+        this.fuelBar.outline = this.add.sprite(48, 24, 'fuelOutline');
+        this.fuelBar.outline.setScale(0.22)
+        this.fuelBar.bar = this.add.sprite(48, 24, 'fuelBar');
+        this.fuelBar.bar.setScale(0.22)
+        this.fuelBar.mask = this.add.sprite(this.fuelBar.bar.x, this.fuelBar.bar.y, "fuelBar");
+
+        //Timer
+        this.time.addEvent({delay:1, callback:this.updateFuelBar, callbackScope: this, repeat: -1 });
+
     }
+
 
     update() {
         //Road Movement
@@ -60,8 +67,20 @@ class BaseScene extends Phaser.Scene {
             // if(this.scrollSpeed >= 400){SW
             //     this.scrollSpeed = 400
             // }
+
+            
         }
+        //Fuel Bar Controler
+        this.fuelBar.mask.visible = false;
+        this.fuelBar.mask.offSet = 100;
+        this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
 
+    updateFuelBar() {
+        // this.fuelBar.mask.offSet = this.fuelBar.bar.width - (0.2)
+        // this.fuelBar.mask.x = this.fuelBar.bar.x - this.fuelBar.mask.offSet;
+        this.fuelBar.mask.x -= 1;
+        console.log(this.fuelBar.mask);
+    }
 
 }
