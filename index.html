@@ -8,11 +8,12 @@
 </head>
 
 <body>
+    <!--
     <style>
         #scoreboard {
             width: 320px;
             height: 410px;
-            position: absolute;
+            position: Fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -76,7 +77,9 @@
             margin-left: 5px;
         }
     </style>
+    -->
     <script src="js/phaser.min.js"></script>
+    <script src="js/UIClasses.js"></script>
     <script src="js/Main_Scene.js"></script>
     <script>
         var config = {
@@ -86,17 +89,7 @@
             backgroundColor: '#000000',
             pixelArt: true,
             scale: {
-                mode: Phaser.Scale.FIT,
-                min: {
-                    width: 320,
-                    height: 410
-
-                },
-                max: {
-                    width: 320,
-                    height: 410
-
-                },
+                mode: Phaser.Scale.ENVLOPE,
                 autoCenter: Phaser.Scale.CENTER_BOTH
             },
             physics: {
@@ -109,38 +102,42 @@
                 }
             },
             scene: BaseScene,
+            parent: 'game'
         };
 
         var game = new Phaser.Game(config);
     </script>
-
-    <div id='scoreboard'>
-        <div class='inner-board'>
-            <div class='fuel-meter meter-box'>
-                <div class='label'>Fuel</div>
-                <div class="fuel-level-container">
-                    <div class='fuel-level'>
+<!--
+    <div id='game'>
+        <div id='scoreboard'>
+            <div class='inner-board'>
+                <div class='fuel-meter meter-box'>
+                    <div class='label'>Fuel</div>
+                    <div class="fuel-level-container">
+                        <div class='fuel-level'>
+                        </div>
                     </div>
-                </div>
-                <!--end of Fuel meter-->
-                <div class='time-meter meter-box'>
-                    <div class='label'>Time: </div>
-                    <div class='time'>
-                        00:00:00
+                    
+                    <div class='time-meter meter-box'>
+                        <div class='label'>Time: </div>
+                        <div class='time'>
+                            00:00:00
+                        </div>
                     </div>
-                </div>
-                <!--end of Time meter-->
-                <div class='speed-meter meter-box'>
-                    <div class='speed'>
-                        0
+                   
+                    <div class='speed-meter meter-box'>
+                        <div class='speed'>
+                            0
+                        </div>
+                        <div class='unit'>
+                            Mph
+                        </div>
+                        
                     </div>
-                    <div class='unit'>
-                        Mph
-                    </div>
-                    <!--end of Speed meter-->
                 </div>
             </div>
         </div>
+    -->
 </body>
 
 </html>
