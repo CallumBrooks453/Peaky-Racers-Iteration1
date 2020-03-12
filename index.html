@@ -8,18 +8,8 @@
 </head>
 
 <body>
-    <canvas width="320" height="410" id="canvas"></canvas>
-    <script src="js/Main_Scene.js"></script>
     <style>
-        canvas {
-            background-color: aqua;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        #scoreboard{
+        #scoreboard {
             width: 320px;
             height: 410px;
             position: absolute;
@@ -28,65 +18,102 @@
             transform: translate(-50%, -50%);
         }
 
-        #scoreboard .inner-board{
+        #scoreboard .inner-board {
             width: inherit;
             height: inherit;
             position: relative;
         }
 
-        #scoreboard .inner-board .fuel-meter{
+        #scoreboard .inner-board .fuel-meter {
             position: absolute;
             left: 10px;
             top: 10px;
             display: flex;
         }
-        
-        .meter-box{
+
+        .meter-box {
             color: white;
             background-color: rgba(0, 0, 0, 0.5);
             padding: 5px 5px;
             font-family: 'Times New Roman', Times, serif
         }
 
-        #scoreboard .inner-board .fuel-meter .fuel-level-container{
+        #scoreboard .inner-board .fuel-meter .fuel-level-container {
             width: 100px;
             padding: 0px 5px;
         }
 
-        #scoreboard .inner-board .fuel-meter .fuel-level-container .fuel-level{
+        #scoreboard .inner-board .fuel-meter .fuel-level-container .fuel-level {
             width: 50px;
             height: 20px;
             background-color: green;
         }
 
-        #scoreboard .inner-board .time-meter{
+        #scoreboard .inner-board .time-meter {
             position: absolute;
             right: -150px;
             top: 0px;
             display: flex;
         }
-        
-        #scoreboard .inner-board .time-meter .label{
+
+        #scoreboard .inner-board .time-meter .label {
             margin-right: 10px;
         }
 
-        #scoreboard .inner-board .speed-meter{
+        #scoreboard .inner-board .speed-meter {
             position: absolute;
             left: 0px;
             top: 35px;
             display: flex;
         }
 
-        #scoreboard .inner-board .speed-meter .speed{
+        #scoreboard .inner-board .speed-meter .speed {
             width: 30px;
             text-align: right;
         }
 
-        #scoreboard .inner-board .speed-meter .unit{
-         margin-left: 5px;
+        #scoreboard .inner-board .speed-meter .unit {
+            margin-left: 5px;
         }
-
     </style>
+    <script src="js/phaser.min.js"></script>
+    <script src="js/Main_Scene.js"></script>
+    <script>
+        var config = {
+            type: Phaser.WEBGL,
+            width: 320,
+            height: 410,
+            backgroundColor: '#000000',
+            pixelArt: true,
+            scale: {
+                mode: Phaser.Scale.FIT,
+                min: {
+                    width: 320,
+                    height: 410
+
+                },
+                max: {
+                    width: 320,
+                    height: 410
+
+                },
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            },
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: {
+                        y: 0
+                    },
+                    debug: false
+                }
+            },
+            scene: BaseScene,
+        };
+
+        var game = new Phaser.Game(config);
+    </script>
+
     <div id='scoreboard'>
         <div class='inner-board'>
             <div class='fuel-meter meter-box'>
@@ -94,23 +121,26 @@
                 <div class="fuel-level-container">
                     <div class='fuel-level'>
                     </div>
-                </div> <!--end of Fuel meter-->
-                <div class= 'time-meter meter-box'>
+                </div>
+                <!--end of Fuel meter-->
+                <div class='time-meter meter-box'>
                     <div class='label'>Time: </div>
                     <div class='time'>
-                         00:00:00
+                        00:00:00
                     </div>
-                </div><!--end of Time meter-->
+                </div>
+                <!--end of Time meter-->
                 <div class='speed-meter meter-box'>
                     <div class='speed'>
                         0
                     </div>
-                <div class='unit'>
-                    Mph
-                </div><!--end of Speed meter-->
+                    <div class='unit'>
+                        Mph
+                    </div>
+                    <!--end of Speed meter-->
+                </div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>
