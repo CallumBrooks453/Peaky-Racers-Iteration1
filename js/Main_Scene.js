@@ -19,6 +19,15 @@ class BaseScene extends Phaser.Scene {
         //Load Player
         this.player = this.physics.add.sprite(162, 350, "player");
         this.player.setCollideWorldBounds(true)
+        
+        //Time Score
+        this.textTimeScore = this.add.text(config.width-100, 3, 'Time: 0', {
+            font: '15px Arial'
+        });
+
+        this.timeScore = 0;
+        this.speedIncreaseInterval = 5;
+
         //Load Fuel
         this.add.text(5, 3, 'Fuel:', {
             font: '15px Arial'
@@ -29,9 +38,11 @@ class BaseScene extends Phaser.Scene {
         this.fuelBar.bar = this.add.sprite(48, 24, 'fuelBar');
         this.fuelBar.bar.setScale(0.22)
         this.fuelBar.mask = this.add.sprite(this.fuelBar.bar.x, this.fuelBar.bar.y, "fuelBar");
+        this.fuelBar.mask.setScale(0.22);
 
         //Timer
-        this.time.addEvent({delay:1, callback:this.updateFuelBar, callbackScope: this, repeat: -1 });
+        this.time.addEvent({delay:200, callback:this.updateFuelBar, callbackScope: this, repeat: -1 });
+        this.time.addEvent({delay:1000, callback:this.updateTimeScore, callbackScope: this, repeat: -1});
 
     }
 
@@ -80,7 +91,21 @@ class BaseScene extends Phaser.Scene {
         // this.fuelBar.mask.offSet = this.fuelBar.bar.width - (0.2)
         // this.fuelBar.mask.x = this.fuelBar.bar.x - this.fuelBar.mask.offSet;
         this.fuelBar.mask.x -= 1;
-        console.log(this.fuelBar.mask);
+    }
+
+    updateTimeScore(){
+        this.timeScore++;
+        //Update score text to reflect time
+        this.textTimeScore.setText("Time: " + this.timeScore);
+
+        //For minutes and seconds:
+        //Make two new properties of the scene (seconds and minutes)
+        //As seconds reaches 60, minutes increases by 1 and seconds gets set to 0
+
+        if((this.timeScore % this.speedIncreaseInterval) == 0){
+            console.log("SPEED");
+            this.scrollSpeed += 50;
+        }
     }
 
 }
