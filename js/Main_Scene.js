@@ -19,13 +19,18 @@ class BaseScene extends Phaser.Scene {
         //Load Player
         this.player = this.physics.add.sprite(162, 350, "player");
         this.player.setCollideWorldBounds(true)
-        
+
         //Time Score
-        this.textTimeScore = this.add.text(config.width-100, 3, 'Time: 0', {
+        this.textTimeScore = this.add.text(config.width - 45, 3, '0', {
+            font: '15px Arial'
+        });
+
+        this.textMinuteTimeScore = this.add.text(config.width - 110, 3, 'Timer: 0 :', {
             font: '15px Arial'
         });
 
         this.timeScore = 0;
+        this.minuteScore = 0;
         this.speedIncreaseInterval = 5;
 
         //Load Fuel
@@ -40,13 +45,21 @@ class BaseScene extends Phaser.Scene {
         this.fuelBar.mask = this.add.sprite(this.fuelBar.bar.x, this.fuelBar.bar.y, "fuelBar");
         this.fuelBar.mask.setScale(0.22);
 
-        //Timer
-        this.time.addEvent({delay:200, callback:this.updateFuelBar, callbackScope: this, repeat: -1 });
-        this.time.addEvent({delay:1000, callback:this.updateTimeScore, callbackScope: this, repeat: -1});
+        //Tick Timers
+        this.time.addEvent({
+            delay: 200,
+            callback: this.updateFuelBar,
+            callbackScope: this,
+            repeat: -1
+        });
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.updateTimeScore,
+            callbackScope: this,
+            repeat: -1
+        });
 
     }
-
-
     update() {
         //Road Movement
         this.road.setVelocityY(this.scrollSpeed)
@@ -70,41 +83,30 @@ class BaseScene extends Phaser.Scene {
             if (this.input.activePointer.isDown = false) {
                 this.player.body.x = 0
             }
-            // //Speed Controler
-            // if(this.scrollSpeed <= 1){
-            //     this.scrollSpeed = 0
-            // }
-
-            // if(this.scrollSpeed >= 400){SW
-            //     this.scrollSpeed = 400
-            // }
-
-            
         }
         //Fuel Bar Controler
         this.fuelBar.mask.visible = false;
-        this.fuelBar.mask.offSet = 100;
         this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
 
     updateFuelBar() {
-        // this.fuelBar.mask.offSet = this.fuelBar.bar.width - (0.2)
-        // this.fuelBar.mask.x = this.fuelBar.bar.x - this.fuelBar.mask.offSet;
         this.fuelBar.mask.x -= 1;
     }
 
-    updateTimeScore(){
+    updateTimeScore() {
         this.timeScore++;
         //Update score text to reflect time
-        this.textTimeScore.setText("Time: " + this.timeScore);
+        this.textTimeScore.setText("" + this.timeScore);
 
-        //For minutes and seconds:
-        //Make two new properties of the scene (seconds and minutes)
-        //As seconds reaches 60, minutes increases by 1 and seconds gets set to 0
-
-        if((this.timeScore % this.speedIncreaseInterval) == 0){
-            console.log("SPEED");
+        //Changes the Speed dependant on the Time played
+        if ((this.timeScore % this.speedIncreaseInterval) == 0) {
             this.scrollSpeed += 50;
+        }
+        //Updates the minute and resets the seconds back to  
+        if (this.timeScore === 60) {
+            this.timeScore = 0
+            this.minuteScore++
+            this.textMinuteTimeScore.setText("Timer: " + this.minuteScore + " :")
         }
     }
 
