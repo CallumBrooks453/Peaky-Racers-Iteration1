@@ -58,7 +58,7 @@ class BaseScene extends Phaser.Scene {
             callbackScope: this,
             repeat: -1
         });
-
+	this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
     update() {
         //Road Movement
@@ -86,7 +86,7 @@ class BaseScene extends Phaser.Scene {
         }
         //Fuel Bar Controler
         this.fuelBar.mask.visible = false;
-        this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
+        
     }
 
     updateFuelBar() {
