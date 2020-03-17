@@ -6,7 +6,10 @@ class BaseScene extends Phaser.Scene {
         this.fuelDrain = 1;
         this.fuelRegain = 0.7;
         this.maxFuel = 48;
-        this.randomLane = Phaser.Math.RND.pick([115 ,160, 205])
+
+        //Whoever helps this is the issue
+        let lanePos = [150, 160, 210]
+         this.randomLane = lanePos[Math.floor(Math.random() * 3)]
     }
     preload() {
         this.load.image('road', 'assets/png/level-1.png');
@@ -109,8 +112,8 @@ class BaseScene extends Phaser.Scene {
         //Gas Can Physics
         this.gasCan.setVelocityY(this.fuelFallSpeed);
         if (this.gasCan.body.y > 400) {
+            this.gasCan.x == this.randomLane
             this.gasCan.body.y = -10
-            this.gasCan.body.x = this.randomLane
         }
     }
     //adds drain to the fuel bar and when empty slows the player down
@@ -124,7 +127,7 @@ class BaseScene extends Phaser.Scene {
     addFuel() {
         this.fuelBar.mask.x += this.fuelRegain
         this.disposeOfGasCan(this.gasCan)
-        this.respawnGas()
+        //this.respawnGas()
     }
 
     updateTimeScore() {
@@ -144,15 +147,9 @@ class BaseScene extends Phaser.Scene {
         }
     }
     //Makes gas can invisible when it hits the player
-    disposeOfGasCan(gasCan){
-        gasCan.disableBody(true, true)
-    }
-    
-    respawnGas(){
-        if(this.gasCan.disableBody(false, false)){
-            this.gasCan.body.x = this.randomLane
-            this.gasCan.body.y = -10
-            this.gasCan.enableBody(true, true)
-         }
+    disposeOfGasCan(gasCan) {
+        this.gasCan.body.x = this.randomLane
+        this.gasCan.body.y = -10
+        
     }
 }
