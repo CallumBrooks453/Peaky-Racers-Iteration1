@@ -1,15 +1,22 @@
 class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
-        this.scrollSpeed = 200
+        this.scrollSpeed = 200;
+        this.fuelFallSpeed = 350;
+        this.fuelDrain = 1;
+        this.fuelRegain = 0.7;
+        this.maxFuel = 48;
+        this.randomLane = Phaser.Math.RND.pick([115 ,160, 205])
     }
     preload() {
         this.load.image('road', 'assets/png/level-1.png');
         this.load.image("player", "assets/png/car_player.png");
 
         //UI Load
-        this.load.image("fuelBar", 'assets/png/fuel-bar-inner.png');
-        this.load.image('fuelOutline', 'assets/png/fuel-bar-outer.png', )
+        this.load.image("fuelBar", 'assets/png/fuel-bar-inner.png')
+
+        //Item Loader
+        this.load.image('gasCan', 'assets/png/item_gas.png')
 
     }
     create() {
@@ -19,6 +26,10 @@ class BaseScene extends Phaser.Scene {
         //Load Player
         this.player = this.physics.add.sprite(162, 350, "player");
         this.player.setCollideWorldBounds(true)
+        //Load Items
+        this.gasCan = this.physics.add.sprite(this.randomLane, 50, 'gasCan')
+        this.gasCan.setScale(0.9)
+        this.physics.add.overlap(this.gasCan, this.player, this.addFuel, null, this)
 
         //Time Score
         this.textTimeScore = this.add.text(config.width - 45, 3, '0', {
@@ -38,12 +49,11 @@ class BaseScene extends Phaser.Scene {
             font: '15px Arial'
         });
         this.fuelBar = {};
-        this.fuelBar.outline = this.add.sprite(48, 24, 'fuelOutline');
-        this.fuelBar.outline.setScale(0.22)
         this.fuelBar.bar = this.add.sprite(48, 24, 'fuelBar');
         this.fuelBar.bar.setScale(0.22)
-        this.fuelBar.mask = this.add.sprite(this.fuelBar.bar.x, this.fuelBar.bar.y, "fuelBar");
+        this.fuelBar.mask = this.add.sprite(this.maxFuel, 24, "fuelBar");
         this.fuelBar.mask.setScale(0.22);
+
 
         //Tick Timers
         this.time.addEvent({
@@ -58,7 +68,7 @@ class BaseScene extends Phaser.Scene {
             callbackScope: this,
             repeat: -1
         });
-	this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
+        this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
     update() {
         //Road Movement
@@ -70,8 +80,9 @@ class BaseScene extends Phaser.Scene {
         if (this.road2.body.y > 405) {
             this.road2.body.y = -405
         }
+
         //Player Controls and Collision with Path
-        if (this.player.x >= 207) {} else if (this.input.activePointer.x >= 160 & this.input.activePointer.isDown) {
+        if (this.player.x >= 200) {} else if (this.input.activePointer.x >= 160 & this.input.activePointer.isDown) {
             this.player.body.x += 45
             if (this.input.activePointer.isDown = false) {
                 this.player.body.x = 0
@@ -86,11 +97,34 @@ class BaseScene extends Phaser.Scene {
         }
         //Fuel Bar Controler
         this.fuelBar.mask.visible = false;
-        
-    }
+        if (this.scrollSpeed <= 0) {
+            this.scene.pause()
+        }
 
+        if (this.fuelBar.mask.x >= this.maxFuel) {
+            this.fuelBar.mask.x = this.maxFuel
+        }
+
+
+        //Gas Can Physics
+        this.gasCan.setVelocityY(this.fuelFallSpeed);
+        if (this.gasCan.body.y > 400) {
+            this.gasCan.body.y = -10
+            this.gasCan.body.x = this.randomLane
+        }
+    }
+    //adds drain to the fuel bar and when empty slows the player down
     updateFuelBar() {
-        this.fuelBar.mask.x -= 1;
+        this.fuelBar.mask.x -= this.fuelDrain;
+        if (this.fuelBar.mask.x <= -47) {
+            this.scrollSpeed -= 20;
+        }
+    }
+    //Adds fuel to fuel bar and then calls the dispose of fuel function
+    addFuel() {
+        this.fuelBar.mask.x += this.fuelRegain
+        this.disposeOfGasCan(this.gasCan)
+        this.respawnGas()
     }
 
     updateTimeScore() {
@@ -109,5 +143,16 @@ class BaseScene extends Phaser.Scene {
             this.textMinuteTimeScore.setText("Timer: " + this.minuteScore + " :")
         }
     }
-
+    //Makes gas can invisible when it hits the player
+    disposeOfGasCan(gasCan){
+        gasCan.disableBody(true, true)
+    }
+    
+    respawnGas(){
+        if(this.gasCan.disableBody(false, false)){
+            this.gasCan.body.x = this.randomLane
+            this.gasCan.body.y = -10
+            this.gasCan.enableBody(true, true)
+         }
+    }
 }
