@@ -1,15 +1,20 @@
+Array.prototype.randomElement = function () {
+    return this[Math.floor(Math.random() * this.length)];
+}
+
+let lanePos = [115, 160, 205];
+let x = lanePos.randomElement();
+
 class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
         this.scrollSpeed = 200;
         this.fuelFallSpeed = 350;
         this.fuelDrain = 1;
-        this.fuelRegain = 0.7;
+        this.fuelRegain = 25;
         this.maxFuel = 48;
-
-        //Whoever helps this is the issue
-        let lanePos = [150, 160, 210]
-         this.randomLane = lanePos[Math.floor(Math.random() * 3)]
+        this.maxScrollSpeed = 600;
+        this.maxFuelFallSpeed = 950;
     }
     preload() {
         this.load.image('road', 'assets/png/level-1.png');
@@ -23,6 +28,7 @@ class BaseScene extends Phaser.Scene {
 
     }
     create() {
+        console.log(this.fuelFallSpeed)
         //Load Road
         this.road = this.physics.add.sprite(160, -205, "road");
         this.road2 = this.physics.add.sprite(160, 200, "road");
@@ -30,9 +36,10 @@ class BaseScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(162, 350, "player");
         this.player.setCollideWorldBounds(true)
         //Load Items
-        this.gasCan = this.physics.add.sprite(this.randomLane, 50, 'gasCan')
+        this.gasCan = this.physics.add.sprite(x, 50, 'gasCan')
         this.gasCan.setScale(0.9)
         this.physics.add.overlap(this.gasCan, this.player, this.addFuel, null, this)
+        this.physics.add.overlap(this.gasCan, this.player, this.disposeOfGasCan, null, this)
 
         //Time Score
         this.textTimeScore = this.add.text(config.width - 45, 3, '0', {
@@ -74,6 +81,7 @@ class BaseScene extends Phaser.Scene {
         this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
     update() {
+        console.log(this.fuelFallSpeed)
         //Road Movement
         this.road.setVelocityY(this.scrollSpeed)
         this.road2.setVelocityY(this.scrollSpeed)
@@ -108,12 +116,22 @@ class BaseScene extends Phaser.Scene {
             this.fuelBar.mask.x = this.maxFuel
         }
 
+        //Speed Control
+        if (this.scrollSpeed >= this.maxScrollSpeed) {
+            this.scrollSpeed = this.maxScrollSpeed
+        }
+
+        if (this.fuelFallSpeed >= this.maxFuelFallSpeed) {
+            this.fuelFallSpeed = this.maxFuelFallSpeed
+        }
+
 
         //Gas Can Physics
         this.gasCan.setVelocityY(this.fuelFallSpeed);
-        if (this.gasCan.body.y > 400) {
-            this.gasCan.x == this.randomLane
-            this.gasCan.body.y = -10
+        if (this.gasCan.y > 400) {
+            x = lanePos.randomElement();
+            this.gasCan.x = x
+            this.gasCan.y = (Math.random() * -1000) - 2100;
         }
     }
     //adds drain to the fuel bar and when empty slows the player down
@@ -126,8 +144,6 @@ class BaseScene extends Phaser.Scene {
     //Adds fuel to fuel bar and then calls the dispose of fuel function
     addFuel() {
         this.fuelBar.mask.x += this.fuelRegain
-        this.disposeOfGasCan(this.gasCan)
-        //this.respawnGas()
     }
 
     updateTimeScore() {
@@ -138,6 +154,7 @@ class BaseScene extends Phaser.Scene {
         //Changes the Speed dependant on the Time played
         if ((this.timeScore % this.speedIncreaseInterval) == 0) {
             this.scrollSpeed += 50;
+            this.fuelFallSpeed += 75;
         }
         //Updates the minute and resets the seconds back to  
         if (this.timeScore === 60) {
@@ -148,8 +165,9 @@ class BaseScene extends Phaser.Scene {
     }
     //Makes gas can invisible when it hits the player
     disposeOfGasCan(gasCan) {
-        this.gasCan.body.x = this.randomLane
-        this.gasCan.body.y = -10
-        
+        x = lanePos.randomElement();
+        this.gasCan.x = x
+        this.gasCan.y = (Math.random() * -1100) - 2100;
+
     }
 }
