@@ -42,15 +42,15 @@ class BaseScene extends Phaser.Scene {
         this.physics.add.overlap(this.gasCan, this.player, this.disposeOfGasCan, null, this)
 
         //Time Score
-        this.textTimeScore = this.add.text(config.width - 45, 3, '0', {
+        this.textTimeScore = this.add.text(config.width - 45, 3, '00:00', {
             font: '15px Arial'
         });
 
-        this.textMinuteTimeScore = this.add.text(config.width - 110, 3, 'Timer: 0 :', {
+        this.textMinuteTimeScore = this.add.text(config.width - 110, 3, '', {
             font: '15px Arial'
         });
 
-        this.timeScore = 0;
+        this.timeScore = 596;
         this.minuteScore = 0;
         this.speedIncreaseInterval = 5;
 
@@ -148,26 +148,42 @@ class BaseScene extends Phaser.Scene {
 
     updateTimeScore() {
         this.timeScore++;
-        //Update score text to reflect time
-        this.textTimeScore.setText("" + this.timeScore);
 
-        //Changes the Speed dependant on the Time played
-        if ((this.timeScore % this.speedIncreaseInterval) == 0) {
-            this.scrollSpeed += 50;
-            this.fuelFallSpeed += 75;
+        let returnString = "";
+        let seconds = "";
+        let minutes = "";
+
+        returnString += Math.floor(this.timeScore / 60);
+        
+        if((this.timeScore % 60) < 10)
+        {
+            seconds = ":" + 0 + (this.timeScore % 60)
         }
-        //Updates the minute and resets the seconds back to  
-        if (this.timeScore === 60) {
-            this.timeScore = 0
-            this.minuteScore++
-            this.textMinuteTimeScore.setText("Timer: " + this.minuteScore + " :")
+        else
+        {
+            seconds = ":" + this.timeScore % 60;
         }
+
+        var minutesNum = Math.floor(this.timeScore / 60);
+        if(minutesNum < 10)
+        {
+            minutes = "0" + minutesNum;
+        }
+        else
+        {
+            minutes = minutesNum;
+        }
+
+        returnString = minutes + seconds;
+        this.textTimeScore.setText(returnString);
     }
+    
     //Makes gas can invisible when it hits the player
     disposeOfGasCan(gasCan) {
         x = lanePos.randomElement();
         this.gasCan.x = x
         this.gasCan.y = (Math.random() * -1100) - 2100;
 
+        */
     }
 }
