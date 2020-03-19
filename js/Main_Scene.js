@@ -5,20 +5,32 @@ Array.prototype.randomElement = function () {
 let lanePos = [115, 160, 205];
 let x = lanePos.randomElement();
 
+Array.prototype.randomElement = function () {
+    return this[Math.floor(Math.random() * this.length)];
+}
+
+let enemyPos = [115, 160, 205];
+let eX = enemyPos.randomElement();
+
 class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
         this.scrollSpeed = 200;
         this.fuelFallSpeed = 350;
         this.fuelDrain = 1;
-        this.fuelRegain = 25;
+        this.fuelRegain = 35;
         this.maxFuel = 48;
         this.maxScrollSpeed = 600;
         this.maxFuelFallSpeed = 950;
+        this.enemySpeed = 450;
+        this.maxEnemySpeed = 950;
     }
     preload() {
+
+        //Player,Enviroment and Enemy Load
         this.load.image('road', 'assets/png/level-1.png');
         this.load.image("player", "assets/png/car_player.png");
+        this.load.image('bike', 'assets/png/car_enemy.png');
 
         //UI Load
         this.load.image("fuelBar", 'assets/png/fuel-bar-inner.png')
@@ -28,15 +40,17 @@ class BaseScene extends Phaser.Scene {
 
     }
     create() {
-        console.log(this.fuelFallSpeed)
         //Load Road
         this.road = this.physics.add.sprite(160, -205, "road");
         this.road2 = this.physics.add.sprite(160, 200, "road");
         //Load Player
         this.player = this.physics.add.sprite(162, 350, "player");
         this.player.setCollideWorldBounds(true)
+        //Load Enemy
+        this.enemy = this.physics.add.sprite(eX, 450, 'bike')
+        this.physics.add.overlap(this.enemy, this.player, this.enemyHitPlayer, null, this)
         //Load Items
-        this.gasCan = this.physics.add.sprite(x, 50, 'gasCan')
+        this.gasCan = this.physics.add.sprite(x, 450, 'gasCan')
         this.gasCan.setScale(0.9)
         this.physics.add.overlap(this.gasCan, this.player, this.addFuel, null, this)
         this.physics.add.overlap(this.gasCan, this.player, this.disposeOfGasCan, null, this)
@@ -50,7 +64,7 @@ class BaseScene extends Phaser.Scene {
             font: '15px Arial'
         });
 
-        this.timeScore = 596;
+        this.timeScore = 0;
         this.minuteScore = 0;
         this.speedIncreaseInterval = 5;
 
@@ -78,10 +92,16 @@ class BaseScene extends Phaser.Scene {
             callbackScope: this,
             repeat: -1
         });
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: this.updateSpeed,
+            callbackScope: this,
+            repeat: -1
+        });
         this.fuelBar.bar.mask = new Phaser.Display.Masks.BitmapMask(this, this.fuelBar.mask);
     }
     update() {
-        console.log(this.fuelFallSpeed)
         //Road Movement
         this.road.setVelocityY(this.scrollSpeed)
         this.road2.setVelocityY(this.scrollSpeed)
@@ -125,6 +145,10 @@ class BaseScene extends Phaser.Scene {
             this.fuelFallSpeed = this.maxFuelFallSpeed
         }
 
+        if (this.enemySpeed >= this.maxEnemySpeed) {
+            this.enemySpeed = this.maxEnemySpeed
+        }
+
 
         //Gas Can Physics
         this.gasCan.setVelocityY(this.fuelFallSpeed);
@@ -132,6 +156,14 @@ class BaseScene extends Phaser.Scene {
             x = lanePos.randomElement();
             this.gasCan.x = x
             this.gasCan.y = (Math.random() * -1000) - 2100;
+        }
+
+        //Enemy Physics
+        this.enemy.setVelocityY(this.enemySpeed);
+        if (this.enemy.y > 400) {
+            eX = enemyPos.randomElement();
+            this.enemy.x = eX
+            this.enemy.y = (Math.random() * -1500) - 2600;
         }
     }
     //adds drain to the fuel bar and when empty slows the player down
@@ -183,7 +215,17 @@ class BaseScene extends Phaser.Scene {
         x = lanePos.randomElement();
         this.gasCan.x = x
         this.gasCan.y = (Math.random() * -1100) - 2100;
+    }
+    //Destroys player when they hit the enemy
+    enemyHitPlayer(){
+        this.player.disableBody(true, true)
+        this.game.destroy()
+    }
 
-        */
+    //Increase Speed every 5 seconds
+    updateSpeed(){
+        this.scrollSpeed += 50
+        this.fuelFallSpeed += 25
+        this.enemySpeed += 40
     }
 }
